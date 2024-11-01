@@ -1,0 +1,5 @@
+.dashboard__container {
+  display: grid;
+  grid-template-columns: 400px auto;
+  grid-template-areas: 'sidebar main_dashboard';
+}

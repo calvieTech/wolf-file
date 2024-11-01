@@ -1,0 +1,23 @@
+.login__container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.login__title {
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.login__form {
+  background-color: white;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  border-radius: 8px;
+  margin: 50px auto;
+}

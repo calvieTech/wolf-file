@@ -1,0 +1,15 @@
+.maindashboard__container {
+  grid-area: 'main_dashboard';
+}
+
+.maindashboard__container > h1 {
+  text-align: center;
+  padding: 30px;
+}
+
+.maindashboard__controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
