@@ -4,10 +4,15 @@ const cors = require('cors');
 const csurf = require('csurf');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const passport = require('passport');
 
+const LocalStrategy = require('passport-local').Strategy;
 require('dotenv').config();
 
-const authRouter = require('./app/routes/auth.routes');
+const userRouter = require('./app/routes/user.routes');
+
+const prismaClient = require('./data/index');
 
 const app = express();
 const PORT = 3001;
@@ -41,7 +46,18 @@ app.use(
   })
 );
 
-app.use('/auth', authRouter);
+// app.use(
+//   session({
+//     secret: 'password',
+//     resave: false,
+//     saveUninitialized: false,
+//   })
+// );
+// app.use(passport.session());
+
+app.use(express.urlencoded({ extended: false }));
+
+app.use('/user', userRouter);
 
 app.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);

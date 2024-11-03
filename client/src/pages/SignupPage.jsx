@@ -5,28 +5,66 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
+import { useNavigate } from 'react-router-dom';
 import './signuppage.css';
 
 function SignupPage() {
   const [validated, setValidated] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const handleSubmit = (event) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
     const target = event.target;
 
     event.preventDefault();
-    // console.log(`event: `, event);
+
+    // Reset error message
+    setErrorMessage('');
 
     if (target.checkValidity() === false) {
       event.preventDefault();
       event.stopPropagation();
+      return;
+    } else {
+      if (password !== confirmPassword) {
+        setErrorMessage('Passwords do not match.');
+        return; // Stop form submission
+      }
+
+      try {
+        const newUserObject = {
+          email: email,
+          password: password,
+        };
+
+        const newUserResponse = await fetch(
+          'http://localhost:3001/user/signup',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newUserObject),
+          }
+        );
+
+        if (newUserResponse.ok) {
+          setValidated(true);
+          navigate('/');
+        } else {
+          const errorData = await newUserResponse.json();
+          setErrorMessage(errorData.message || 'Signup failed');
+
+          console.error('Signup failed!');
+        }
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
     }
-
-    console.log(`email: `, email);
-    console.log(`password: `, password);
-
-    setValidated(true);
   };
 
   return (
@@ -46,6 +84,7 @@ function SignupPage() {
               <Form.Label>Email address</Form.Label>
               <Form.Control
                 type="email"
+                name="email"
                 value={email}
                 required
                 placeholder="Enter email"
@@ -55,11 +94,12 @@ function SignupPage() {
 
             <Form.Group
               className="mb-3"
-              controlId="formBasicPassword"
+              // controlId="formBasicPassword"
             >
               <Form.Label>Password</Form.Label>
               <Form.Control
                 type="password"
+                name="password"
                 value={password}
                 required
                 placeholder="Password"
@@ -68,13 +108,15 @@ function SignupPage() {
             </Form.Group>
             <Form.Group
               className="mb-3"
-              controlId="formBasicPassword"
+              // controlId="formBasicPassword"
             >
               <Form.Label>Confirm Password</Form.Label>
               <Form.Control
                 required
                 type="password"
+                value={confirmPassword}
                 placeholder="Confirm Password"
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </Form.Group>
             <Form.Group
@@ -83,6 +125,12 @@ function SignupPage() {
             >
               <Form.Check type="checkbox" label="Remember password" />
             </Form.Group>
+
+            {/* Display error message if passwords do not match */}
+            {errorMessage && (
+              <p style={{ color: 'red' }}>{errorMessage}</p>
+            )}
+
             <Button variant="primary" type="submit">
               Submit
             </Button>
